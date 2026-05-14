@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build & Deploy Frontend
 
 on:
   push:
@@ -6,18 +6,18 @@ on:
       - main
 
 jobs:
-  # ── 1. Build & deploy frontend to cPanel via FTP ──────────────────────────
-  deploy-frontend:
-    name: Frontend → cPanel
+  build-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -25,24 +25,31 @@ jobs:
       - name: Clear Vite cache
         run: rm -rf node_modules/.vite client/node_modules/.vite
 
-      - name: Build frontend
+      - name: Build project
         env:
           VITE_API_BASE: https://api.lgk.com
           NODE_ENV: production
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: npm run build
 
-      - name: Deploy to cPanel via FTP
+      - name: Verify build output
+        run: ls -la dist/public
+
+      - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: 68.178.149.21
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
+          protocol: ftps
           port: 21
           local-dir: dist/public/
           server-dir: ./
-          dangerous-clean-slate: true
           exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/*.map
             **/*.cjs
 
   # ── 2. Deploy backend to VPS via SSH ──────────────────────────────────────
