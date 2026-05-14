@@ -1,0 +1,25 @@
+feat: PhonePe payment gateway integration
+
+- shared/schema.ts: added 7 PhonePe columns to payment_settings table
+  (paymentMode, phonePeClientId, phonePeClientSecret, phonePeClientVersion,
+  phonePeEnv, phonePeWebhookUsername, phonePeWebhookPassword)
+
+- server/phonepe.ts (new): registerPhonePeRoutes() with singleton SDK client
+  - POST /api/phonepe/initiate — create pending booking + PhonePe order
+  - GET  /api/phonepe/status/:orderId — poll status, auto-confirm on COMPLETED
+  - POST /api/phonepe/callback — webhook handler with validateCallback
+
+- server/routes.ts: import + register PhonePe routes passing autoQueueWaMessage
+
+- client/src/App.tsx: add lazy /payment/return route
+
+- client/src/pages/payment-return.tsx (new): polls status every 3s,
+  shows pending spinner / success / failure states
+
+- client/src/pages/settings.tsx: QRManagement now has payment mode selector
+  (Manual UPI / Online PhonePe), with full PhonePe credentials form
+  (clientId, secret, version, env toggle, webhook credentials)
+
+- client/src/pages/service-detail.tsx: step-3 conditionally shows orange
+  PhonePe button (POST initiate → redirect) when paymentMode=phonepe,
+  otherwise shows existing QR + TxnID manual flow unchanged

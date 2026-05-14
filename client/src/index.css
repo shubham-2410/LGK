@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'DM Sans', sans-serif;
+    --font-display: 'Outfit', sans-serif;
+
+    /* Water Blue & Kayak Yellow Palette */
+    --background: 200 20% 98%;
+    --foreground: 200 50% 10%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 200 50% 10%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 50% 10%;
+    
+    /* Primary: Water Blue (#0077b6) */
+    --primary: 201 100% 36%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary: Light Blue */
+    --secondary: 200 40% 90%;
+    --secondary-foreground: 201 100% 36%;
+    
+    /* Accent: Kayak Yellow (#ffb703) */
+    --accent: 43 100% 51%;
+    --accent-foreground: 200 50% 10%;
+    
+    --muted: 200 20% 90%;
+    --muted-foreground: 200 15% 45%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 200 20% 88%;
+    --input: 200 20% 88%;
+    --ring: 201 100% 36%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 200 50% 6%;
+    --foreground: 200 20% 98%;
+    
+    --card: 200 40% 10%;
+    --card-foreground: 200 20% 98%;
+    
+    --popover: 200 40% 10%;
+    --popover-foreground: 200 20% 98%;
+    
+    --primary: 201 100% 46%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 200 40% 16%;
+    --secondary-foreground: 200 20% 98%;
+    
+    --accent: 43 100% 51%;
+    --accent-foreground: 200 50% 10%;
+    
+    --muted: 200 40% 16%;
+    --muted-foreground: 200 20% 65%;
+    
+    --border: 200 40% 16%;
+    --input: 200 40% 16%;
+    --ring: 201 100% 46%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Hide scrollbar for clean horizontal scrolls */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* ─── Review Strip Auto-scroll ──────────────────────────────────── */
+@keyframes review-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.review-track {
+  animation: review-scroll 30s linear infinite;
+}
+.review-track:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Phone Input Overrides ─────────────────────────────────────── */
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.PhoneInputCountrySelect {
+  opacity: 0;
+  position: absolute;
+  width: 32px;
+  height: 24px;
+  cursor: pointer;
+}
+.PhoneInputCountryIcon {
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.PhoneInputCountryIcon--square {
+  width: 20px;
+  height: 20px;
+}
+.PhoneInputInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  color: inherit;
+  padding: 0;
+}
+.PhoneInputInput::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+.PhoneInputCountrySelectArrow {
+  color: hsl(var(--muted-foreground));
+  margin-left: 2px;
+  font-size: 10px;
+}
+
+/* Fast custom tooltip — appears in ~200ms */
+.fast-tooltip {
+  position: relative;
+}
+.fast-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  transform: none;
+  background: rgba(15, 23, 42, 0.88);
+  color: #fff;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 50;
+  transition: opacity 0.15s ease;
+  transition-delay: 0.2s;
+}
+.fast-tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Safe area inset utilities for iOS notch / home indicator */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}

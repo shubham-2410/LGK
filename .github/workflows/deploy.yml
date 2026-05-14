@@ -1,0 +1,68 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # ── 1. Build & deploy frontend to cPanel via FTP ──────────────────────────
+  deploy-frontend:
+    name: Frontend → cPanel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Clear Vite cache
+        run: rm -rf node_modules/.vite client/node_modules/.vite
+
+      - name: Build frontend
+        env:
+          VITE_API_BASE: https://api.lgk.com
+          NODE_ENV: production
+        run: npm run build
+
+      - name: Deploy to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: 68.178.149.21
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: dist/public/
+          server-dir: ./
+          dangerous-clean-slate: true
+          exclude: |
+            **/*.cjs
+
+  # ── 2. Deploy backend to VPS via SSH ──────────────────────────────────────
+  deploy-backend:
+    name: Backend → VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /var/www/lgk-api
+            git pull origin main
+            npm install --production
+            npm run build
+            pm2 restart lgk-api || pm2 start dist/index.cjs --name lgk-api
+            pm2 save
