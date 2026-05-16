@@ -155,8 +155,17 @@ app.use((req, res, next) => {
     return res.status(status).json({ message });
   });
 
+  // if (process.env.NODE_ENV === "production") {
+  //   serveStatic(app);
+  // } else {
+  //   const { setupVite } = await import("./vite");
+  //   await setupVite(httpServer, app);
+  // }
+
   if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
+    if (process.env.SERVE_STATIC === "true") {
+      serveStatic(app);
+    }
   } else {
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);

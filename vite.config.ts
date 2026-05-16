@@ -29,18 +29,20 @@ export default defineConfig(({ mode }) => ({
     },
   },
   server: {
-    proxy: mode === "development" ? {
+    proxy: {
       "/api": {
-        target: "http://localhost:5000",
+        target: "https://api.localgoakayaking.com",
         changeOrigin: true,
+        secure: true,
       },
       "/uploads": {
-        target: "http://localhost:5000",
+        target: "https://api.localgoakayaking.com",
         changeOrigin: true,
+        secure: true,
       },
-    } : undefined,
+    },
     fs: {
-      strict: false
+      strict: false,
     },
   },
 }));
