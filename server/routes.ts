@@ -174,7 +174,12 @@ export async function registerRoutes(
         const hashed = await bcrypt.hash(stored, BCRYPT_ROUNDS);
         await storage.updateUserProfile(user.id, { password: hashed } as any);
       }
-      if (req.session) req.session.userId = user.id;
+      if (req.session) {
+        req.session.userId = user.id;
+        await new Promise<void>((resolve, reject) =>
+          req.session.save((err: any) => err ? reject(err) : resolve())
+        );
+      }
       res.setHeader('Cache-Control', 'no-store');
       return res.status(200).json(user);
     } catch (err) {
@@ -191,7 +196,12 @@ export async function registerRoutes(
       if (!user || !user.loginPin || user.loginPin.trim() !== pin.trim()) {
         return res.status(401).json({ message: "Invalid mobile number or PIN" });
       }
-      if (req.session) req.session.userId = user.id;
+      if (req.session) {
+        req.session.userId = user.id;
+        await new Promise<void>((resolve, reject) =>
+          req.session.save((err: any) => err ? reject(err) : resolve())
+        );
+      }
       res.setHeader('Cache-Control', 'no-store');
       return res.status(200).json(user);
     } catch (err) {
@@ -281,7 +291,12 @@ export async function registerRoutes(
         fullName: fullName?.trim() || null,
         isAdmin: false,
       } as any);
-      if (req.session) req.session.userId = user.id;
+      if (req.session) {
+        req.session.userId = user.id;
+        await new Promise<void>((resolve, reject) =>
+          req.session.save((err: any) => err ? reject(err) : resolve())
+        );
+      }
       res.setHeader('Cache-Control', 'no-store');
       notifyAdmins(
         "New User Registered",
