@@ -3,7 +3,7 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 // In production the frontend is on cPanel and backend on a separate VPS.
 // VITE_API_BASE is injected at build time (e.g. https://api.lgk.com).
 // In development both run on the same origin so we use an empty string.
-const API_BASE = (import.meta.env.VITE_API_BASE as string) ?? "";
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || "https://api.localgoakayaking.com";
 
 export function getApiUrl(path: string): string {
   // path should always start with /
@@ -40,7 +40,7 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const path = queryKey.join("/") as string;
+    const path = queryKey[0] as string;
     const fullUrl = path.startsWith("http") ? path : getApiUrl(path);
     const res = await fetch(fullUrl, {
       credentials: "include",

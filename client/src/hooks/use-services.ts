@@ -1,12 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
+import { getApiUrl } from "@/lib/queryClient";
 import type { Service } from "@shared/schema";
 
 export function useServices() {
   return useQuery({
     queryKey: [api.services.list.path],
     queryFn: async () => {
-      const res = await fetch(api.services.list.path);
+      const res = await fetch(getApiUrl(api.services.list.path));
       if (!res.ok) throw new Error("Failed to fetch services");
       return api.services.list.responses[200].parse(await res.json());
     },
@@ -18,7 +19,7 @@ export function useCreateService() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: Omit<Service, "id">) => {
-      const res = await fetch(api.services.create.path, {
+      const res = await fetch(getApiUrl(api.services.create.path), {
         method: api.services.create.method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -41,7 +42,7 @@ export function useUpdateService() {
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Service> & { id: number }) => {
       const url = buildUrl(api.services.update.path, { id });
-      const res = await fetch(url, {
+      const res = await fetch(getApiUrl(url), {
         method: api.services.update.method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
@@ -61,7 +62,7 @@ export function useDeleteService() {
   return useMutation({
     mutationFn: async (id: number) => {
       const url = buildUrl(api.services.delete.path, { id });
-      const res = await fetch(url, {
+      const res = await fetch(getApiUrl(url), {
         method: api.services.delete.method,
         credentials: "include",
       });
