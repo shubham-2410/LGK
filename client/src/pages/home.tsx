@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/queryClient";
 import { AppLayout } from "@/components/layout";
 import { BannerSlider } from "@/components/banner-slider";
 import { useServices } from "@/hooks/use-services";
@@ -170,7 +171,7 @@ function TideWidget() {
     setIsFetchingApi(true);
     setFetchError(null);
     try {
-      const res = await fetch(`/api/admin/tide?date=${date}`);
+      const res = await fetch(getApiUrl(`/api/admin/tide?date=${date}`));
       if (!res.ok) {
         const e = await res.json() as { message?: string };
         throw new Error(e.message || "Failed to fetch tide data");

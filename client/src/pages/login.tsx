@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/queryClient";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
@@ -354,7 +355,7 @@ export default function Login() {
     if (!forgotEmail.trim()) return;
     setIsSendingOtp(true);
     try {
-      const res = await fetch("/api/auth/send-otp", {
+      const res = await fetch(getApiUrl("/api/auth/send-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail.trim(), purpose: "reset" }),
@@ -378,7 +379,7 @@ export default function Login() {
     }
     setIsResetting(true);
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail.trim(), otp: forgotOtp.trim(), newPassword: forgotNewPassword }),

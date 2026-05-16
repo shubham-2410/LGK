@@ -5,6 +5,7 @@ import lgkLogo from "@assets/LGK_Logo_1772691141992.jpg";
 import { useAuth } from "@/hooks/use-auth";
 import { useUnreadCount } from "@/hooks/use-notifications";
 import { useQuery } from "@tanstack/react-query";
+import { getApiUrl } from "@/lib/queryClient";
 
 function useVisitorPing() {
   useEffect(() => {
@@ -14,7 +15,7 @@ function useVisitorPing() {
         id = Math.random().toString(36).slice(2) + Date.now().toString(36);
         localStorage.setItem("_vsid", id);
       }
-      fetch("/api/visitors/ping", {
+      fetch(getApiUrl("/api/visitors/ping"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: id }),

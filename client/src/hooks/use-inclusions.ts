@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getApiUrl } from "@/lib/queryClient";
 import type { Inclusion } from "@shared/schema";
 
 export function useInclusions() {
   return useQuery<Inclusion[]>({
     queryKey: ["/api/inclusions"],
     queryFn: async () => {
-      const res = await fetch("/api/inclusions");
+      const res = await fetch(getApiUrl("/api/inclusions"));
       if (!res.ok) throw new Error("Failed to fetch inclusions");
       return res.json();
     },
@@ -17,7 +18,7 @@ export function useCreateInclusion() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data: { name: string; icon: string }) => {
-      const res = await fetch("/api/inclusions", {
+      const res = await fetch(getApiUrl("/api/inclusions"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -37,7 +38,7 @@ export function useDeleteInclusion() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`/api/inclusions/${id}`, { method: "DELETE", credentials: "include" });
+      await fetch(getApiUrl(`/api/inclusions/${id}`), { method: "DELETE", credentials: "include" });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/inclusions"] }),
   });

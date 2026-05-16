@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/queryClient";
 import { AppLayout } from "@/components/layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation, useSearch } from "wouter";
@@ -148,7 +149,7 @@ function EditProfileSection({ onBack }: { onBack: () => void }) {
       setPendingEmail(email.trim());
       setEmailOtp("");
       try {
-        const res = await fetch("/api/auth/send-otp", {
+        const res = await fetch(getApiUrl("/api/auth/send-otp"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: email.trim(), purpose: "register" }),
@@ -179,7 +180,7 @@ function EditProfileSection({ onBack }: { onBack: () => void }) {
     // Instead, pass otp to backend via a dedicated verify endpoint approach.
     // Here we verify by attempting to call send-otp with verify mode — simpler: just save with otp field
     try {
-      const res = await fetch("/api/auth/verify-email-otp", {
+      const res = await fetch(getApiUrl("/api/auth/verify-email-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: pendingEmail, otp: emailOtp }),
@@ -584,7 +585,7 @@ const MAX_PHOTOS = 5;
 async function uploadPhotoToServer(file: File): Promise<string> {
   const form = new FormData();
   form.append("photo", file);
-  const res = await fetch("/api/upload/photo", { method: "POST", body: form, credentials: "include" });
+  const res = await fetch(getApiUrl("/api/upload/photo"), { method: "POST", body: form, credentials: "include" });
   if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || "Upload failed"); }
   return (await res.json()).url as string;
 }
@@ -5692,7 +5693,7 @@ function SeaLevelSection({ onBack }: { onBack: () => void }) {
   const { data: tideData, isLoading: tideLoading, refetch: fetchTide, error: tideError } = useQuery<TideResponse>({
     queryKey: ["/api/admin/tide", date],
     queryFn: async (): Promise<TideResponse> => {
-      const res = await fetch(`/api/admin/tide?date=${date}`);
+      const res = await fetch(getApiUrl(`/api/admin/tide?date=${date}`));
       if (!res.ok) {
         const err = await res.json() as { message?: string };
         throw new Error(err.message || "Failed to fetch tide data");

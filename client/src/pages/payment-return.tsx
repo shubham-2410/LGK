@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/queryClient";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { CheckCircle2, XCircle, Loader2, Home, CalendarDays } from "lucide-react";
@@ -27,7 +28,7 @@ export default function PaymentReturn() {
 
     const poll = async () => {
       try {
-        const res = await fetch(`/api/phonepe/status/${encodeURIComponent(orderId)}`);
+        const res = await fetch(getApiUrl(`/api/phonepe/status/${encodeURIComponent(orderId)}`));
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           setError(data.message || "Failed to check payment status.");

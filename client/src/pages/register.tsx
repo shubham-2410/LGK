@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/queryClient";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
@@ -52,7 +53,7 @@ export default function Register() {
     }
     setIsSendingOtp(true);
     try {
-      const res = await fetch("/api/auth/send-otp", {
+      const res = await fetch(getApiUrl("/api/auth/send-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), purpose: "register" }),
@@ -82,7 +83,7 @@ export default function Register() {
     }
     setIsVerifyingOtp(true);
     try {
-      const res = await fetch("/api/auth/check-register-otp", {
+      const res = await fetch(getApiUrl("/api/auth/check-register-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), otp }),

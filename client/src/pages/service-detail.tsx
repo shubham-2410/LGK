@@ -1,3 +1,4 @@
+import { getApiUrl } from "@/lib/queryClient";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { AppLayout } from "@/components/layout";
@@ -167,7 +168,7 @@ export default function ServiceDetail() {
         : services?.find(s => s.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === id)?.id;
       const params = new URLSearchParams();
       if (svcId) params.set("serviceId", String(svcId));
-      const res = await fetch(`/api/coupons/public?${params}`, { credentials: "include" });
+      const res = await fetch(getApiUrl(`/api/coupons/public?${params}`), { credentials: "include" });
       return res.json();
     },
     enabled: !!id,
@@ -251,14 +252,14 @@ export default function ServiceDetail() {
   useEffect(() => {
     if (!service || !autoRefCode || referralApplied) return;
     setIsValidatingReferral(true);
-    fetch(`/api/referrals/validate?code=${encodeURIComponent(autoRefCode)}`, { credentials: "include" })
+    fetch(getApiUrl(`/api/referrals/validate?code=${encodeURIComponent(autoRefCode)}`), { credentials: "include" })
       .then(r => r.json())
       .then(data => {
         if (data.valid) {
           setReferralApplied(data.referral);
           if (data.referral.linkedCouponCode) {
             const cParams = new URLSearchParams({ code: data.referral.linkedCouponCode, serviceId: String(service.id) });
-            fetch(`/api/coupons/validate?${cParams}`, { credentials: "include" })
+            fetch(getApiUrl(`/api/coupons/validate?${cParams}`), { credentials: "include" })
               .then(r => r.json())
               .then(cData => {
                 if (cData.valid) {
@@ -359,7 +360,7 @@ export default function ServiceDetail() {
     setReferralError(null);
     setIsValidatingReferral(true);
     try {
-      const res = await fetch(`/api/referrals/validate?code=${encodeURIComponent(code)}`, { credentials: "include" });
+      const res = await fetch(getApiUrl(`/api/referrals/validate?code=${encodeURIComponent(code)}`), { credentials: "include" });
       const data = await res.json();
       if (data.valid) {
         setReferralApplied(data.referral);
@@ -369,7 +370,7 @@ export default function ServiceDetail() {
           try {
             const cParams = new URLSearchParams({ code: data.referral.linkedCouponCode });
             if (service?.id) cParams.set("serviceId", String(service.id));
-            const cRes = await fetch(`/api/coupons/validate?${cParams}`, { credentials: "include" });
+            const cRes = await fetch(getApiUrl(`/api/coupons/validate?${cParams}`), { credentials: "include" });
             const cData = await cRes.json();
             if (cData.valid) {
               const c = cData.coupon;
@@ -405,7 +406,7 @@ export default function ServiceDetail() {
     try {
       const params = new URLSearchParams({ code: coupon.trim() });
       if (service?.id) params.set("serviceId", String(service.id));
-      const res = await fetch(`/api/coupons/validate?${params}`, { credentials: "include" });
+      const res = await fetch(getApiUrl(`/api/coupons/validate?${params}`), { credentials: "include" });
       const data = await res.json();
       if (data.valid) {
         const c = data.coupon;
@@ -466,7 +467,7 @@ export default function ServiceDetail() {
     try {
       const params = new URLSearchParams({ code });
       if (service?.id) params.set("serviceId", String(service.id));
-      const res = await fetch(`/api/coupons/validate?${params}`, { credentials: "include" });
+      const res = await fetch(getApiUrl(`/api/coupons/validate?${params}`), { credentials: "include" });
       const data = await res.json();
       if (data.valid) {
         const c = data.coupon;
@@ -563,7 +564,7 @@ export default function ServiceDetail() {
         ? `Check-in: ${format(checkInDate!, "dd MMM")} → Check-out: ${format(checkOutDate!, "dd MMM")} (${nights} night${nights > 1 ? "s" : ""})`
         : timeSlot;
       const bookingPax = isNightPricing ? adults + kids : pax;
-      const res = await fetch("/api/phonepe/initiate", {
+      const res = await fetch(getApiUrl("/api/phonepe/initiate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
