@@ -27,7 +27,7 @@ jobs:
 
       - name: Build project
         env:
-          VITE_API_BASE: https://api.lgk.com
+          VITE_API_BASE: https://api.localgoakayaking.com
           NODE_ENV: production
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: npm run build
