@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@shared/routes";
+import { getApiUrl, apiRequest } from "@/lib/queryClient";
 import type { InsertBooking } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
 
 export function useBookings() {
   return useQuery({
     queryKey: [api.bookings.list.path],
     queryFn: async () => {
-      const res = await fetch(api.bookings.list.path, { credentials: "include" });
+      const res = await fetch(getApiUrl(api.bookings.list.path), { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch bookings");
       return api.bookings.list.responses[200].parse(await res.json());
     },
@@ -21,16 +21,16 @@ export function useCreateBooking() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: InsertBooking) => {
-      const res = await fetch(api.bookings.create.path, {
+      const res = await fetch(getApiUrl(api.bookings.create.path), {
         method: api.bookings.create.method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
         credentials: "include",
       });
       if (!res.ok) {
-        if(res.status === 400) {
-           const err = await res.json();
-           throw new Error(err.message || "Validation failed");
+        if (res.status === 400) {
+          const err = await res.json();
+          throw new Error(err.message || "Validation failed");
         }
         throw new Error("Failed to create booking");
       }
